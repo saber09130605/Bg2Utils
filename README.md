@@ -1,0 +1,1 @@
+bg2CopyToClipboard是一个复制到粘贴板
