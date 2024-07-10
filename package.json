@@ -3,7 +3,7 @@
     "version": "1.0.7",
     "main": "dist/bg2utils.cjs.js",
     "module": "dist/bg2utils.esm.js",
-    "types": "dist/types/index.d.ts",
+    "types": "dist/index.d.ts",
     "exports": {
         ".": {
             "import": "./dist/bg2utils.esm.js",

@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    /* 基础选项 */
+    "target": "es5",                         /* 指定 ECMAScript 目标版本 */
+    "module": "esnext",                      /* 指定生成代码的模块系统 */
+    "lib": ["es2015", "dom"],                /* 编译过程中需要引入的库文件列表 */
+    "declaration": true,                     /* 生成相应的 '.d.ts' 文件 */
+    "outDir": "./dist",                      /* 指定输出目录 */
+    "rootDir": "./src",                      /* 指定输入文件的根目录 */
+    "strict": true,                          /* 启用所有严格类型检查选项 */
+    "esModuleInterop": true,                 /* 允许导入符合 esModule 规范的模块 */
+    "forceConsistentCasingInFileNames": true,/* 禁止对同一个文件的不一致引用 */
+    "moduleResolution": "node",              /* 选择模块解析策略 */
+    "declarationMap": true,                  /* 为每个 '.d.ts' 文件生成一个源映射 */
+    "sourceMap": true,                       /* 生成相应的 '.map' 文件 */
+    "composite": false,                      /* 启用项目编译 */
+    "removeComments": true                   /* 移除注释 */
+  },
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist", "**/*.test.ts"]
+}
