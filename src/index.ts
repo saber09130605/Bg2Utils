@@ -3,36 +3,59 @@ import { Code, Response } from "./types/common";
 export * from "./types/common";
 // export * from "./utils/utils";
 //复制到粘贴板
-export const bg2CopyToClipboard = (text: string):Response<void> => {
-  if (!document) {
-    return  buildResponse(Code.NO_DOCUMENT)
+export const bg2CopyToClipboard = async (text: string):  Promise<Response<void>> => {
+  if (!navigator.clipboard) {
+    if (!document) {
+      return buildResponse<void>(Code.NO_DOCUMENT);
+    }
+    return fallbackCopyToClipboard(text);
   }
+
+  try {
+    await navigator.clipboard.writeText(text);
+    // console.log('Text successfully copied to clipboard');
+    return buildResponse<void>(Code.SUCCESS);
+  } catch (err) {
+    // console.error('Error copying text to clipboard', err);
+    return buildResponse<void>(Code.COPY_ERROR);
+  }
+}
+const fallbackCopyToClipboard = async (text: string):Promise<Response<void>>=>{
   // 创建一个textarea元素
   const textarea = document.createElement('textarea');
-  
-  // 设置textarea的样式，使其在视觉上不可见
+  document.body.appendChild(textarea);
   textarea.style.position = 'fixed';
   textarea.style.top = '0';
   textarea.style.left = '0';
   textarea.style.opacity = '0';
-  // 将需要复制的文本赋值给textarea
   textarea.value = text;
-  document.body.appendChild(textarea);
-  // 选中textarea中的文本
   textarea.focus();
   textarea.select();
+
   try {
-    // 执行复制命令
     const successful = document.execCommand('copy');
+    document.body.removeChild(textarea); // 清理DOM
     if (successful) {
-      // 如果复制成功，使用Element UI的Message组件显示成功提示
-      return buildResponse(Code.SUCCESS)
+      // console.log('Text successfully copied to clipboard using fallback');
+      return buildResponse<void>(Code.SUCCESS);
     } else {
-      // 如果复制失败，显示失败提示
-      return  buildResponse(Code.COPY_ERROR)
+      // console.error('Fallback copy to clipboard failed');
+      return buildResponse<void>(Code.COPY_ERROR);
     }
   } catch (err) {
-    // 如果执行复制命令时发生异常，显示异常提示
-    return  buildResponse(Code.COPY_ERROR)
-  } 
+    document.body.removeChild(textarea); // 确保清理DOM
+    // console.error('Exception while copying to clipboard', err);
+    return buildResponse<void>(Code.COPY_ERROR);
+  }
 }
+
+
+//判断是否移动端
+export const bg2IsMobileDevice= () => {
+  return (
+      /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+          navigator.userAgent
+      ) || window.innerWidth < 768
+  );
+}
+
