@@ -2,5 +2,7 @@ bg2CopyToClipboard是一个复制到粘贴板功能,兼容navigator.clipboard跟
 
 bg2IsMobileDevice判断是否移动端
 
+sendTrackingData是获取gif图来埋点的方法
+
 
 比较好用的富文本编辑器库:wangEditor
