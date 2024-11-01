@@ -1,59 +1,53 @@
 import { buildResponse } from './utils/utils'
 import { BG2Code, BG2Response } from './types/common'
 export * from './types/common'
-// export * from "./utils/utils";
-//复制到粘贴板
+
+// 复制到粘贴板
 export const bg2CopyToClipboard = async (
   text: string
 ): Promise<BG2Response<void>> => {
-  if (!navigator.clipboard) {
-    if (!document) {
-      return buildResponse<void>(BG2Code.NO_DOCUMENT)
+  if (navigator.clipboard) {
+    try {
+      await navigator.clipboard.writeText(text)
+      return buildResponse<void>(BG2Code.SUCCESS)
+    } catch (err) {
+      return buildResponse<void>(BG2Code.COPY_ERROR)
     }
+  } else {
     return fallbackCopyToClipboard(text)
   }
-
-  try {
-    await navigator.clipboard.writeText(text)
-    // console.log('Text successfully copied to clipboard');
-    return buildResponse<void>(BG2Code.SUCCESS)
-  } catch (err) {
-    // console.error('Error copying text to clipboard', err);
-    return buildResponse<void>(BG2Code.COPY_ERROR)
-  }
 }
+
 const fallbackCopyToClipboard = async (
   text: string
 ): Promise<BG2Response<void>> => {
-  // 创建一个textarea元素
+  if (!document) {
+    return buildResponse<void>(BG2Code.NO_DOCUMENT)
+  }
+
   const textarea = document.createElement('textarea')
-  document.body.appendChild(textarea)
   textarea.style.position = 'fixed'
   textarea.style.top = '0'
   textarea.style.left = '0'
   textarea.style.opacity = '0'
   textarea.value = text
+  document.body.appendChild(textarea)
   textarea.focus()
   textarea.select()
-
+  textarea.setSelectionRange(0, textarea.value.length)
   try {
     const successful = document.execCommand('copy')
-    document.body.removeChild(textarea) // 清理DOM
-    if (successful) {
-      // console.log('Text successfully copied to clipboard using fallback');
-      return buildResponse<void>(BG2Code.SUCCESS)
-    } else {
-      // console.error('Fallback copy to clipboard failed');
-      return buildResponse<void>(BG2Code.COPY_ERROR)
-    }
+    document.body.removeChild(textarea)
+    return successful
+      ? buildResponse<void>(BG2Code.SUCCESS)
+      : buildResponse<void>(BG2Code.COPY_ERROR)
   } catch (err) {
-    document.body.removeChild(textarea) // 确保清理DOM
-    // console.error('Exception while copying to clipboard', err);
+    document.body.removeChild(textarea)
     return buildResponse<void>(BG2Code.COPY_ERROR)
   }
 }
 
-//判断是否移动端
+// 判断是否移动端
 export const bg2IsMobileDevice = () => {
   return (
     /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -62,17 +56,12 @@ export const bg2IsMobileDevice = () => {
   )
 }
 
-//gif图埋点方案
-export const sendTrackingData = (gifUrl: string, data: any) => {
-  let params = []
-  // 将数据对象转换为查询字符串
-  for (let key in data) {
-    if (data.hasOwnProperty(key)) {
-      params.push(encodeURIComponent(key) + '=' + encodeURIComponent(data[key]))
-    }
-  }
+// GIF 图埋点方案
+export const sendTrackingData = (gifUrl: string, data: Record<string, any>) => {
+  const params = Object.keys(data)
+    .map((key) => `${encodeURIComponent(key)}=${encodeURIComponent(data[key])}`)
+    .join('&')
 
-  // 创建 Image 对象发送请求
-  let img = new Image()
-  img.src = `${gifUrl}?${params.join('&')}`
+  const img = new Image()
+  img.src = `${gifUrl}?${params}`
 }

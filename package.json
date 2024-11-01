@@ -1,6 +1,6 @@
 {
     "name": "bg2utils",
-    "version": "1.0.9",
+    "version": "1.0.11",
     "main": "dist/bg2utils.cjs.js",
     "module": "dist/bg2utils.esm.js",
     "types": "dist/index.d.ts",
